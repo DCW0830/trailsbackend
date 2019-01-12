@@ -15,16 +15,12 @@ class Api::V1::UsersController < ApplicationController
   end
 
   def login
-    user = User.find_by(username: params[:user][:username])
-    if user && user.authenticate(params[:user][:password]) 
-      render json: { current: user }
+    @user = User.find_by(username: params[:user][:username])
+    if @user && @user.authenticate(params[:user][:password])
+      render json: @user, status: :accepted
     else
       render json: { errors: 'Failed to Log In' }, status: 400
     end
-  end
-
-  def show
-    render json: get_current_user, status: :accepted
   end
 
   private
