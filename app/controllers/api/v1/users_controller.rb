@@ -1,5 +1,4 @@
 class Api::V1::UsersController < ApplicationController
-  before_action :find_user, only: [:login]
 
   def index
     @users = User.all
@@ -11,15 +10,16 @@ class Api::V1::UsersController < ApplicationController
     if @user.valid?
       render json: @user, status: :accepted
     else
-      render json: { errors: @user.error.full_messages }, status: :unprocessible_entity
+      render json: { errors: @user.errors.full_messages }, status: :unprocessible_entity
     end
   end
 
   def login
-    if @user && @user.authenticate(params[:user][:username])
+    user = User.find_by(username: params[:user][:username])
+    if user && user.authenticate(params[:user][:password]) 
       render json: { current: user }
     else
-      render json:  { errors: @user.error.full_messages }, status: :unprocessible_entity
+      render json: { errors: 'Failed to Log In' }, status: 400
     end
   end
 
@@ -29,10 +29,6 @@ class Api::V1::UsersController < ApplicationController
 
   private
 
-  def find_user
-    @user = User.find(params[:user][:username])
-  end
-
   def new_user_params
     params.require(:user).permit(
       :username,
@@ -40,10 +36,5 @@ class Api::V1::UsersController < ApplicationController
       :password_confirmation
     )
   end
-
-  def user_params
-    params.permit(:username)
-  end
-
 
 end
