@@ -1,10 +1,5 @@
 class Api::V1::UsersController < ApplicationController
 
-  def index
-    users = User.all
-    render json: users, status: :accepted
-  end
-
   def create
       user = User.create(new_user_params)
     if user.valid?
@@ -32,5 +27,4 @@ class Api::V1::UsersController < ApplicationController
       :password_confirmation
     )
   end
-
 end
