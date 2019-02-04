@@ -1,20 +1,20 @@
 class Api::V1::UsersController < ApplicationController
 
-  def create
-      user = User.create(new_user_params)
-    if user.valid?
-      render json: user, status: :accepted
-    else
-      render json: { errors: user.errors.full_messages }, status: :unprocessible_entity
-    end
-  end
-
   def login
-    user = User.find_by(username: params[:user][:username])
-    if user && user.authenticate(params[:user][:password])
-      render json: user, status: :accepted
+    if params[:user][:password_confirmation]
+      user = User.create(new_user_params)
+      if user.valid?
+        render json: user, status: :accepted
+      else
+        render json: { errors: user.errors.full_messages }, status: :unprocessible_entity
+      end
     else
-      render json: { errors: 'Failed to Log In' }, status: 400
+      user = User.find_by(username: params[:user][:username])
+      if user && user.authenticate(params[:user][:password])
+        render json: user, status: :accepted
+      else
+        render json: { errors: 'Failed to Log In' }, status: 400
+      end
     end
   end
 
